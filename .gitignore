@@ -1,0 +1,6 @@
+README-Template.md
+*.ipynb
+venv/
+.ipynb_checkpoints/
+chromedriver
+.DS_Store
