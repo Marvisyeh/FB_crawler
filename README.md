@@ -44,7 +44,7 @@ webdriver.Chrome(executable_path='Your_Path')
 `python maincrawler.py`
 
 檔案會輸出至 docs/fb_data_{數量}.json
-![](text.png)
+![](./docs/text.png)
 
 <!-- ### Break down into end to end tests
 
