@@ -4,3 +4,6 @@ venv/
 .ipynb_checkpoints/
 chromedriver
 .DS_Store
+src/fb_crawler/__pycache__/
+docs/*.json
+.idea/
