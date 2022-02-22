@@ -12,8 +12,7 @@ soup = chorme_get_page(url)
 num = 1
 result = list()
 
-# while True:
-for j in range(0,1):
+while True:
     for i in soup.select('div[id="m_group_stories_container"]')[0].find_all(class_=re.compile(r'[b. ]{2}'))[0]:
         article = dict()
         
@@ -71,6 +70,9 @@ for j in range(0,1):
         else:
             print(num)
     
-    next_url = 'https://mbasic.facebook.com'+soup.find_all(class_=re.compile(r'([a-z].+ ){4}'))[0].a['href']
-    soup = get_page(next_url)
-
+    next_url = soup.find_all(class_=re.compile(r'([a-z].+ ){4}'))[0].a['href']
+    if next_url:
+        next_url = 'https://mbasic.facebook.com'+next_url
+        soup = get_page(next_url)
+    else:
+        break
