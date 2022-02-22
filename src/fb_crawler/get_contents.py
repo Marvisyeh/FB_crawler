@@ -1,4 +1,4 @@
-from first_land import chorme_get_page
+from requests_soup import chorme_get_page
 from user_agent import generate_user_agent
 from bs4 import BeautifulSoup
 from random import randint
@@ -18,11 +18,10 @@ def get_article_content(content_url):
     
     return article_contents
 
-
 # All comments
 def get_comments(comment_url, comment_nums):
     all_comments = list()
-    num = 1
+    
     for i in range(0, comment_nums, 10):
         headers = {'User-Agent':generate_user_agent()}
         payload = {
@@ -33,14 +32,14 @@ def get_comments(comment_url, comment_nums):
         res_comments = requests.get(comment_url, headers=headers, params=payload)
         soup_comment = BeautifulSoup(res_comments.text, 'html.parser')
         
-        for i in soup_comment.find_all(id=re.compile(r'^\d{10,17}')):
+        for com in soup_comment.find_all(id=re.compile(r'^\d{10,17}')):
             
             # if comment in comments
-            more_comments = i.find_all(id=re.compile('comment_replies_more.+'))
+            more_comments = com.find_all(id=re.compile('comment_replies_more.+'))
             
             if more_comments:
                 
-                more_comments = 'https://mbasic.facebook.com'+i.find_all(id=re.compile('comment_replies_more.+'))[0].a['href']
+                more_comments = 'https://mbasic.facebook.com'+com.find_all(id=re.compile('comment_replies_more.+'))[0].a['href']
     #             print(more_comments)
                 time.sleep(randint(3,6))
 
@@ -58,43 +57,44 @@ def get_comments(comment_url, comment_nums):
                     per_comment['name'] = response_name
                     # print(m.a.text, end=', ')
 
-                    
-                    response_content = m.div.div.text
-                    per_comment['comment'] = response_content
-                    print(m.div.div.text)
-                    
+                    # 如果留言中的留言超過10筆，會有額外的url
+                    try:
+                        response_content = m.div.div.text
+                        per_comment['comment'] = response_content
+                        # print(m.div.div.text)
+                    except AttributeError as e:
+                        print(e)
+                        pass
                     all_comments.append(per_comment)
                 
-                    # print(num)
-                num+=1
             
             else:
                 
                 per_comment = {}
                 
-                reponse_id = i['id']
+                reponse_id = com['id']
                 per_comment['id']=reponse_id
-                # print(i['id'])
+                # print(com['id'])
 
-                response_name = i.a.text
+                response_name = com.a.text
                 per_comment['name'] = response_name
-                # print(i.a.text, end=":")
+                # print(com.a.text, end=":")
 
-                response_content = i.select('div')[0].text.split('讚')[0].replace(response_name,'')
+                response_content = com.select('div')[0].text.split('讚')[0].replace(response_name,'')
                 per_comment['comment'] = response_content
-                # print(i.select('div')[0].text.split('讚')[0].replace(i.a.text,''))
+                # print(com.select('div')[0].text.split('讚')[0].replace(com.a.text,''))
 
                 all_comments.append(per_comment)
 
-                # print(num)
-                num += 1
+                
                 
                 
             time.sleep(randint(3,7))
-        time.sleep(randint(5,19))
+        time.sleep(randint(2,8))
         
-    print(num, comment_nums)
-    if num == comment_nums:
-        print('complete')
-    
+
     return all_comments
+
+if __name__ == '__main__':
+    url = 'https://mbasic.facebook.com/comment/replies/?ctoken=5413685551983107_5416909204994075&count=11&curr&pc=1&ft_ent_identifier=5413685551983107&gfid=AQCCwRAMTgknIVNB_EU&refid=18&__tn__=R'
+    get_comments(url, 2115)

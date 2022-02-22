@@ -9,9 +9,11 @@ from get_contents import get_article_content,get_comments
 url= 'https://mbasic.facebook.com/groups/1260448967306807'
 soup = chorme_get_page(url)
 
-while True:
-    num = 1
-    result = list()
+num = 1
+result = list()
+
+# while True:
+for j in range(0,1):
     for i in soup.select('div[id="m_group_stories_container"]')[0].find_all(class_=re.compile(r'[b. ]{2}'))[0]:
         article = dict()
         
@@ -58,14 +60,14 @@ while True:
         result.append(article)
 
         num += 1
-        time.sleep(randint(7,13))
+        time.sleep(randint(2,6))
 
+       
         if num % 1000 == 0:
-            with open(f'~/Destop/FB_crawler/docs/fb_data_{num}.json', 'w') as f:
-                json.dump(result)
+            with open(f'./docs/fb_data_{num}.json', 'w') as f:
+                json.dump(result, f, ensure_ascii=False, indent=2)
+            result = list()
         
-            break
-            # result = list()
         else:
             print(num)
     
